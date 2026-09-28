@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-PILKETOS - SMAS KARTINI BATAM</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                            950: '#0a0f1d',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 bg-slate-50 flex flex-col selection:bg-navy-800 selection:text-white">
+
+    <!-- HEADER NAVBAR -->
+    <header className="bg-navy-950 text-white shadow-xl border-b border-slate-800 sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md">
+        <div class="bg-navy-950 text-white shadow-xl border-b border-slate-800 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- School Brand -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('beranda')">
+                    <img src= "kartunu.png" width="57" height="58">
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-extrabold text-base sm:text-lg tracking-tight text-white leading-tight">SMAS KARTINI BATAM</h1>
+                            <span class="bg-gold-500 text-navy-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">E-Pilketos</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Pemilihan Ketua & Wakil Ketua OSIS</p>
+                    </div>
+                </div>
+
+                <!-- Main Navigation Tabs -->
+                <nav class="flex items-center gap-1 sm:gap-2 text-xs font-semibold">
+                    <button id="nav-beranda" onclick="switchTab('beranda')" class="px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10">
+                        <i data-lucide="vote" class="w-4 h-4"></i>
+                        <span>Beranda</span>
+                    </button>
+
+                    <button id="nav-kandidat" onclick="switchTab('kandidat')" class="px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span>Paslon Candidates</span>
+                    </button>
+
+                    <button id="nav-admin" onclick="switchTab('admin')" class="px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-gold-400 hover:bg-white/10 border border-gold-500/30">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        <span>Panel Admin</span>
+                    </button>
+                </nav>
+
+                <!-- Current User Badge -->
+                <div id="user-status-pill" class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-full px-3 py-1 text-xs">
+                    <div class="w-2 h-2 rounded-full bg-slate-500"></div>
+                    <span id="user-status-text" class="text-slate-300 font-medium">Mode Tamu / Belum Login</span>
+                    <button id="btn-logout-user" onclick="logoutUser()" class="hidden ml-1 p-1 text-red-400 hover:bg-red-500/20 rounded-full transition" title="Logout">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- VIEW 1: BERANDA / DASHBOARD PEMILIH -->
+        <section id="view-beranda" class="space-y-8">
+            
+            <!-- Banner Section -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-navy-950 via-navy-900 to-indigo-950 text-white p-6 sm:p-10 shadow-2xl border border-slate-800">
+                <div class="relative z-10 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/30 text-gold-400 text-xs font-semibold mb-4">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Periode Pemilihan 2026/2027
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight mb-3">
+                        E-PILKETOS Digital <br>
+                        <span class="text-gold-400">SMAS KARTINI BATAM</span>
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                        Gunakan hak pilih Anda secara Jujur, Adil, dan Rahasia. Pilihan Anda menentukan visi &amp; kepemimpinan OSIS SMAS Kartini Batam untuk 1 periode ke depan!
+                    </p>
+
+                    <!-- Token Input Box (If not logged in) -->
+                    <div id="login-box-container" class="bg-white/10 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/15 max-w-md shadow-lg">
+                        <label class="block text-xs font-bold text-gold-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <i data-lucide="key-round" class="w-4 h-4"></i> Masukkan Token Unik Pemilih
+                        </label>
+                        <form onsubmit="handleTokenLogin(event)" class="flex flex-col sm:flex-row gap-2">
+                            <input 
+                                type="text" 
+                                id="input-token-login"
+                                placeholder="Contoh: NIS001" 
+                                class="flex-1 px-4 py-2.5 rounded-xl bg-white text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-gold-500 uppercase tracking-wider"
+                                required
+                            />
+                            <button type="submit" class="px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5">
+                                <span>VERIFIKASI</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                        <div id="login-error-msg" class="hidden text-xs text-red-300 font-semibold mt-2 flex items-center gap-1">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                            <span id="login-error-text">Token tidak ditemukan!</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 mt-3 border-t border-white/10 pt-2">
+                            💡 <span class="font-bold text-gold-400">Demo Token:</span> <code class="bg-navy-950/80 px-1.5 py-0.5 rounded text-gold-300 font-mono">NIS001</code>, <code class="bg-navy-950/80 px-1.5 py-0.5 rounded text-gold-300 font-mono">NIS002</code>, <code class="bg-navy-950/80 px-1.5 py-0.5 rounded text-gold-300 font-mono">NIS003</code>
+                        </p>
+                    </div>
+
+                    <!-- User Info Box (If logged in) -->
+                    <div id="logged-in-user-box" class="hidden bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 max-w-md">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <p class="text-xs text-slate-300">Selamat datang,</p>
+                                <h3 id="current-user-nama" class="font-extrabold text-white text-lg">Nama Siswa</h3>
+                                <p id="current-user-detail" class="text-xs text-gold-400">XII MIPA 1 • Token: NIS001</p>
+                            </div>
+                            <div id="voting-status-badge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
+                                <!-- Dynamic badge -->
+                            </div>
+                        </div>
+                        <div id="action-vote-container" class="pt-2 border-t border-white/10">
+                            <!-- Dynamic Button -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Background Graphic -->
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i data-lucide="vote" class="w-96 h-96"></i>
+                </div>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total DPT Siswa</p>
+                        <h3 id="stat-total-siswa" class="text-2xl font-black text-slate-800 mt-1">0</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Siswa terdaftar</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-navy-800 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Suara Masuk</p>
+                        <h3 id="stat-suara-masuk" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+                        <p class="text-[11px] text-emerald-600 font-medium mt-0.5">Telah memungut suara</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="user-check" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Belum Memilih</p>
+                        <h3 id="stat-belum-memilih" class="text-2xl font-black text-amber-600 mt-1">0</h3>
+                        <p class="text-[11px] text-amber-600 font-medium mt-0.5">Menunggu giliran</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Partisipasi</p>
+                        <h3 id="stat-partisipasi-percent" class="text-2xl font-black text-indigo-700 mt-1">0%</h3>
+                        <div class="w-28 bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                            <div id="stat-partisipasi-bar" class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="pie-chart" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guidelines / Guide Steps -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <h3 class="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-navy-800"></i>
+                    Panduan Alur Pemilihan E-Pilketos
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <div class="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center font-bold text-xs mb-2">1</div>
+                        <h4 class="font-bold text-sm text-slate-900">Input Token</h4>
+                        <p class="text-xs text-slate-500 mt-1">Gunakan Token unik resmi yang dibagikan oleh Panitia OSIS.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <div class="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center font-bold text-xs mb-2">2</div>
+                        <h4 class="font-bold text-sm text-slate-900">Pelajari Paslon</h4>
+                        <p class="text-xs text-slate-500 mt-1">Lihat foto, Visi, Misi, &amp; Program Kerja unggulan setiap kandidat.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <div class="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center font-bold text-xs mb-2">3</div>
+                        <h4 class="font-bold text-sm text-slate-900">Gunakan Hak Pilih</h4>
+                        <p class="text-xs text-slate-500 mt-1">Klik tombol 'Pilih Paslon ini' dan lakukan konfirmasi suara.</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <div class="w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-xs mb-2">4</div>
+                        <h4 class="font-bold text-sm text-slate-900">Bukti Voting</h4>
+                        <p class="text-xs text-slate-500 mt-1">Sistem menyimpan suara &amp; menampilkan Struk Bukti Digital resmi.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 2: DAFTAR PASLON KANDIDAT -->
+        <section id="view-kandidat" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">Daftar Pasangan Calon Ketos &amp; Waketos</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">SMAS KARTINI BATAM • Periode Kepengurusan 2026/2027</p>
+                </div>
+                <div id="kandidat-user-notice" class="bg-amber-50 border border-amber-200 text-amber-900 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                    <span>Tentukan pilihan Anda dengan bijak. 1 Akun hanya bisa memilih 1 kali.</span>
+                </div>
+            </div>
+
+            <!-- Candidates Cards Grid Container -->
+            <div id="paslon-cards-grid" class="grid grid-cols-4 md:grid-cols-2 gap-10">
+                <!-- Dynamic Paslon Cards via JS -->
+            </div>
+        </section>
+
+        <!-- VIEW 3: PANEL ADMIN -->
+        <section id="view-admin" class="hidden space-y-6">
+            
+            <!-- ADMIN LOGIN FORM (If not authenticated as admin) -->
+            <div id="admin-login-box" class="max-w-md mx-auto my-12 bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-8">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-gold-400/20 text-navy-950 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-gold-400/30">
+                        <i data-lucide="lock" class="w-7 h-7 text-navy-900"></i>
+                    </div>
+                    <h2 class="text-xl font-extrabold text-slate-900">Authentication Admin</h2>
+                    <p class="text-xs text-slate-500 mt-1">E-Pilketos SMAS KARTINI BATAM</p>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">PIN Keamanan Admin</label>
+                        <input 
+                            type="password" 
+                            id="input-pin-admin"
+                            placeholder="Masukkan PIN Admin" 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-900 font-mono text-center tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-navy-800"
+                            required
+                        />
+                        <p id="admin-login-error" class="hidden text-xs text-red-600 font-semibold mt-2 text-center">PIN Admin Salah!</p>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-navy-900 hover:bg-navy-800 text-white font-bold text-xs rounded-xl shadow-md transition uppercase tracking-wider">
+                        Masuk Panel Admin
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <p class="text-[11px] text-slate-400">PIN Demo default: <code class="bg-slate-100 px-2 py-0.5 rounded font-mono font-bold text-slate-700">admin123</code></p>
+                </div>
+            </div>
+
+            <!-- AUTHENTICATED ADMIN DASHBOARD -->
+            <div id="admin-dashboard-content" class="hidden space-y-6">
+                
+                <!-- Admin Header Bar -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gold-500 text-navy-950 font-black rounded-xl flex items-center justify-center shadow">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-slate-900 text-base">Dashboard Administrator</h2>
+                            <p class="text-xs text-slate-500">Kelola Rekapitulasi, Paslon &amp; Database Siswa SMAS Kartini</p>
+                        </div>
+                    </div>
+
+                    <!-- Admin Sub-tab Buttons -->
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button id="admin-tab-rekap" onclick="switchAdminTab('rekap')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-navy-900 text-white">
+                            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+                            <span>Rekap Suara</span>
+                        </button>
+                        <button id="admin-tab-paslon" onclick="switchAdminTab('paslon')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            <span>Kelola Paslon</span>
+                        </button>
+                        <button id="admin-tab-siswa" onclick="switchAdminTab('siswa')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+                            <span>Database Siswa &amp; Token</span>
+                        </button>
+                        <button onclick="logoutAdmin()" class="px-3 py-2 rounded-xl text-xs font-bold bg-red-100 text-red-700 hover:bg-red-200 transition ml-2 flex items-center gap-1">
+                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                            <span>Keluar Admin</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SUB TAB 1: REKAPITULASI SUARA -->
+                <div id="admin-subview-rekap" class="space-y-6">
+                    <div class="flex justify-between items-center bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                        <div>
+                            <p class="text-xs font-bold text-navy-800 uppercase tracking-wider">Status Pemungutan Suara Real-Time</p>
+                            <h3 id="admin-rekap-total-suara" class="text-2xl font-black text-navy-950 mt-0.5">0 Suara Masuk</h3>
+                        </div>
+                        <button onclick="confirmResetAllVotes()" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span>Reset Data Suara</span>
+                        </button>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Bar Chart Card -->
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                            <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-navy-800"></i>
+                                Grafik Perolehan Suara
+                            </h3>
+                            <div class="relative h-64">
+                                <canvas id="chart-bar-paslon"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Doughnut Chart Card -->
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                            <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-4 h-4 text-navy-800"></i>
+                                Proposi Persentase Suara
+                            </h3>
+                            <div class="relative h-64 flex items-center justify-center">
+                                <canvas id="chart-donut-paslon"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Table Rekap -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                        <div class="p-4 border-b border-slate-200 bg-slate-50">
+                            <h3 class="font-bold text-slate-800 text-sm">Rincian Perolehan Suara Paslon</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider">
+                                    <tr>
+                                        <th class="p-3">No. Urut</th>
+                                        <th class="p-3">Calon Ketua &amp; Wakil</th>
+                                        <th class="p-3 text-center">Perolehan Suara</th>
+                                        <th class="p-3 text-right">Persentase</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-rekap-body" class="divide-y divide-slate-200 font-medium">
+                                    <!-- Dynamic Rekap Table Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB TAB 2: KELOLA PASLON -->
+                <div id="admin-subview-paslon" class="hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-lg">Kelola Data Pasangan Calon</h3>
+                        <button onclick="openModalPaslon()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tambah Paslon Baru</span>
+                        </button>
+                    </div>
+
+                    <div id="admin-paslon-list-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Dynamic CRUD Paslon Cards -->
+                    </div>
+                </div>
+
+                <!-- SUB TAB 3: KELOLA SISWA & IMPORT CSV -->
+                <div id="admin-subview-siswa" class="hidden space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Database Pemilih (DPT Siswa)</h3>
+                            <p class="text-xs text-slate-500">Kelola Hak Akses Token Pemilih SMAS KARTINI BATAM</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="openModalImportCsv()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                <span>Import Data CSV</span>
+                            </button>
+
+                            <button onclick="exportSiswaToCsv()" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <span>Export CSV</span>
+                            </button>
+
+                            <button onclick="autoGenerateAllTokens()" class="px-3.5 py-2 bg-gold-500 hover:bg-gold-600 text-navy-950 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                                <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                                <span>Auto Token</span>
+                            </button>
+
+                            <button onclick="openModalSiswa()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5">
+                                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                <span>Tambah Siswa</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search & Filter Bar -->
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-2">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 ml-2"></i>
+                        <input 
+                            type="text" 
+                            id="search-siswa-input"
+                            oninput="renderSiswaTable()"
+                            placeholder="Cari berdasarkan Nama, NIS, atau Kelas..." 
+                            class="w-full text-xs text-slate-800 focus:outline-none"
+                        />
+                    </div>
+
+                    <!-- Table Siswa -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+                        <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider sticky top-0 z-10">
+                                    <tr>
+                                        <th class="p-3">NIS</th>
+                                        <th class="p-3">Nama Lengkap</th>
+                                        <th class="p-3">Kelas</th>
+                                        <th class="p-3">Token Unik</th>
+                                        <th class="p-3">Status Suara</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-siswa-body" class="divide-y divide-slate-200 font-medium">
+                                    <!-- Dynamic Siswa Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODALS SECTION -->
+
+    <!-- MODAL 1: DETAIL VISI MISI PASLON -->
+    <div id="modal-detail-paslon" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col">
+            <div class="bg-navy-950 text-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span id="detail-paslon-number-badge" class="w-7 h-7 rounded-full bg-gold-400 text-navy-950 font-black flex items-center justify-center text-xs">
+                        01
+                    </span>
+                    <h3 id="detail-paslon-title" class="font-bold text-sm text-gold-400">Detail Paslon</h3>
+                </div>
+                <button onclick="closeModal('modal-detail-paslon')" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-5 custom-scrollbar">
+                <div class="flex flex-col sm:flex-row gap-4 items-center sm:items-start bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <img id="detail-paslon-img" src="" alt="Paslon" class="w-28 h-28 object-cover rounded-xl shadow-md" />
+                    <div>
+                        <h4 id="detail-paslon-ketua" class="font-black text-slate-900 text-lg">Nama Ketua</h4>
+                        <p id="detail-paslon-wakil" class="text-xs text-slate-500 font-semibold">& Nama Wakil</p>
+                        <p class="text-xs text-navy-800 font-bold mt-2">SMAS KARTINI BATAM</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-navy-800 mb-1">Visi Utama</h4>
+                    <p id="detail-paslon-visi" class="text-xs text-slate-700 italic bg-blue-50/60 p-3 rounded-xl border border-blue-100 leading-relaxed">
+                        "Visi Paslon..."
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-navy-800 mb-2">Misi Paslon</h4>
+                    <ul id="detail-paslon-misi-list" class="space-y-1.5 text-xs text-slate-700">
+                        <!-- Dynamic Misi -->
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-navy-800 mb-2">Program Kerja Unggulan</h4>
+                    <div id="detail-paslon-proker-tags" class="flex flex-wrap gap-2">
+                        <!-- Dynamic Proker -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="closeModal('modal-detail-paslon')" class="px-5 py-2 bg-slate-800 text-white font-bold text-xs rounded-xl hover:bg-slate-700 transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: KONFIRMASI VOTING -->
+    <div id="modal-confirm-vote" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-4 border border-slate-100">
+            <div class="w-16 h-16 bg-gold-400/20 text-gold-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <i data-lucide="vote" class="w-8 h-8"></i>
+            </div>
+
+            <h3 class="font-black text-xl text-slate-900">Konfirmasi Pilihan Suara</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda yakin ingin memberikan suara Anda kepada kandidat berikut?
+            </p>
+
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-left">
+                <span id="confirm-paslon-nomor" class="text-[10px] font-extrabold uppercase text-navy-800 tracking-wider">Paslon Nomor Urut 01</span>
+                <h4 id="confirm-paslon-ketua" class="font-extrabold text-slate-900 text-base mt-0.5">Nama Ketua</h4>
+                <p id="confirm-paslon-wakil" class="text-xs text-slate-600 font-medium">& Nama Wakil</p>
+            </div>
+
+            <p class="text-[11px] text-red-500 font-medium italic">
+                ⚠️ Peringatan: Pilihan tidak dapat diubah setelah Anda menekan tombol konfirmasi.
+            </p>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button onclick="closeModal('modal-confirm-vote')" class="flex-1 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl transition">
+                    Batal
+                </button>
+                <button onclick="executeVote()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">
+                    Ya, Konfirmasi Suara
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: STRUK BUKTI VOTING DIGITAL -->
+    <div id="modal-struk-vote" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-100 text-center">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+            </div>
+
+            <h3 class="font-black text-lg text-slate-900">Suara Berhasil Disimpan!</h3>
+            <p class="text-xs text-slate-500">Terima kasih telah berpartisipasi dalam E-Pilketos SMAS Kartini Batam.</p>
+
+            <!-- Digital Receipt Box -->
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-left text-xs space-y-2 font-mono">
+                <div class="flex justify-between border-b border-slate-200 pb-1">
+                    <span class="text-slate-400">Ref No:</span>
+                    <span id="struk-ref-no" class="font-bold text-navy-800">REF-892193</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-200 pb-1">
+                    <span class="text-slate-400">Nama Pemilih:</span>
+                    <span id="struk-nama" class="font-bold text-slate-800">-</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-200 pb-1">
+                    <span class="text-slate-400">Kelas:</span>
+                    <span id="struk-kelas" class="font-bold text-slate-800">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Waktu Memilih:</span>
+                    <span id="struk-waktu" class="font-bold text-slate-800">-</span>
+                </div>
+            </div>
+
+            <button onclick="closeModal('modal-struk-vote')" class="w-full py-2.5 bg-navy-900 hover:bg-navy-800 text-white font-bold text-xs rounded-xl transition">
+                Selesai
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: FORM PASLON (CRUD) -->
+    <div id="modal-form-paslon" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col">
+            <div class="bg-navy-950 text-white p-4 flex justify-between items-center">
+                <h3 id="modal-paslon-title-text" class="font-bold text-sm">Form Data Paslon</h3>
+                <button onclick="closeModal('modal-form-paslon')" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="savePaslonForm(event)" class="p-6 overflow-y-auto space-y-3.5 text-xs custom-scrollbar">
+                <input type="hidden" id="form-paslon-id" />
+                
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nomor Urut</label>
+                    <input type="number" id="form-paslon-nomor" required class="w-full p-2.5 rounded-xl border border-slate-300 font-bold" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Calon Ketua</label>
+                    <input type="text" id="form-paslon-ketua" required class="w-full p-2.5 rounded-xl border border-slate-300 font-semibold" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Calon Wakil Ketua</label>
+                    <input type="text" id="form-paslon-wakil" required class="w-full p-2.5 rounded-xl border border-slate-300 font-semibold" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Foto Paslon (URL Gambar or Base64)</label>
+                    <input type="text" id="form-paslon-foto" placeholder="https://..." class="w-full p-2.5 rounded-xl border border-slate-300 mb-2 font-mono text-[11px]" />
+                    <input type="file" accept="image/*" onchange="convertImageToBase64(this)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-navy-800" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Visi Utama</label>
+                    <textarea id="form-paslon-visi" rows="2" required class="w-full p-2.5 rounded-xl border border-slate-300"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Misi (Satu per baris)</label>
+                    <textarea id="form-paslon-misi" rows="3" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="Misi 1&#10;Misi 2"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Program Kerja (Satu per baris)</label>
+                    <textarea id="form-paslon-proker" rows="3" class="w-full p-2.5 rounded-xl border border-slate-300" placeholder="Proker 1&#10;Proker 2"></textarea>
+                </div>
+
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-form-paslon')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700">Simpan Paslon</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: FORM SISWA (CRUD) -->
+    <div id="modal-form-siswa" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <h3 id="modal-siswa-title-text" class="font-bold text-slate-900 text-base mb-4">Form Data Siswa</h3>
+
+            <form onsubmit="saveSiswaForm(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="form-siswa-id" />
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">NIS (Nomor Induk Siswa)</label>
+                    <input type="text" id="form-siswa-nis" required class="w-full p-2.5 rounded-xl border border-slate-300 font-mono" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="form-siswa-nama" required class="w-full p-2.5 rounded-xl border border-slate-300 font-semibold" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kelas</label>
+                    <input type="text" id="form-siswa-kelas" required class="w-full p-2.5 rounded-xl border border-slate-300" />
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Token Pemilih</label>
+                    <input type="text" id="form-siswa-token" required class="w-full p-2.5 rounded-xl border border-slate-300 font-mono font-bold uppercase" />
+                </div>
+
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal('modal-form-siswa')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700">Simpan Siswa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: IMPORT CSV SISWA -->
+    <div id="modal-import-csv" class="hidden fixed inset-0 z-50 bg-navy-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="file-spreadsheet" class="w-5 h-5 text-indigo-600"></i>
+                    Import Data Siswa CSV
+                </h3>
+                <button onclick="closeModal('modal-import-csv')" class="text-slate-400 hover:text-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center bg-indigo-50 p-3 rounded-2xl border border-indigo-100 text-xs">
+                <span class="text-indigo-900 font-medium">Format Teks: <code>NIS, Nama, Kelas, Token</code> per baris.</span>
+                <button onclick="downloadCsvTemplate()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Template CSV
+                </button>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Paste Teks CSV / Salinan Spreadsheet:</label>
+                <textarea id="import-csv-textarea" rows="6" placeholder="20261001, Budi Santoso, XII MIPA 1, NIS001&#10;20261002, Siti Nur, XII IPS 2, NIS002" class="w-full p-3 border border-slate-300 rounded-xl font-mono text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+
+            <p id="import-csv-status" class="hidden text-xs font-bold"></p>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal('modal-import-csv')" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Batal</button>
+                <button onclick="processCsvImport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition">Proses Import</button>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-navy-950 text-white shadow-xl border-b border-slate-800 sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md margin-top: 2rem;">     </div>
+            </div>
+            
+            <div class="text-center text-white-400">
+                <p>© 2026 Kartexus Labs. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APP LOGIC & JAVASCRIPT -->
+    <script>
+        // INITIAL DEFAULT DATA
+        const DEFAULT_PASLON = [
+            {
+                id: 'paslon-1',
+                nomor: 1,
+                ketua: 'Muhammad Rizky',
+                wakil: 'Siti Nurhaliza',
+                foto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600',
+                visi: 'Mewujudkan OSIS SMAS Kartini Batam yang kreatif, adaptif, berintegritas, serta berbasis teknologi.',
+                misi: [
+                    'Meningkatkan mutu kegiatan ekstrakurikuler berbasis minat bakat siswa.',
+                    'Menyelenggarakan festival seni dan teknologi tahunan antar SMA se-Batam.',
+                    'Mengoptimalkan program ramah lingkungan dan pemilahan sampah sekolah.'
+                ],
+                programKerja: ['Kartini Digital Fest', 'OSIS Mobile Center', 'Jumat Literasi Dua Bahasa'],
+                suara: 12
+            },
+            {
+                id: 'paslon-2',
+                nomor: 2,
+                ketua: 'Amanda Putri',
+                wakil: 'Budi Santoso',
+                foto: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=600',
+                visi: 'Menjadikan SMAS Kartini Batam sebagai ruang kolaborasi generasi muda yang inklusif dan berprestasi.',
+                misi: [
+                    'Memperkuat solidaritas dan toleransi antar siswa.',
+                    'Mengadakan workshop public speaking dan kepemimpinan berkala.',
+                    'Membangun wadah penampung aspirasi siswa secara digital.'
+                ],
+                programKerja: ['Forum Aspirasi Siswa', 'Workshop Soft-Skill Leadership', 'Pekan Olahraga Kartini'],
+                suara: 18
+            },
+        ];
+
+        const DEFAULT_SISWA = [
+            { id: 's1', nis: '20261001', nama: 'Aditya Permana', kelas: 'XII MIPA 1', token: 'NIS001', sudahMemilih: true, pilihan: 'paslon-2' },
+            { id: 's2', nis: '20261002', nama: 'Annisa Rahmawati', kelas: 'XII MIPA 1', token: 'NIS002', sudahMemilih: true, pilihan: 'paslon-1' },
+            { id: 's3', nis: '20261003', nama: 'Bagus Setyo', kelas: 'XII MIPA 2', token: 'NIS003', sudahMemilih: false, pilihan: null },
+            { id: 's4', nis: '20261004', nama: 'Citra Dewi', kelas: 'XII IPS 1', token: 'NIS004', sudahMemilih: true, pilihan: 'paslon-3' },
+            { id: 's5', nis: '20261005', nama: 'Daffa Rizky', kelas: 'XII IPS 2', token: 'NIS005', sudahMemilih: false, pilihan: null },
+            { id: 's6', nis: '20261006', nama: 'Erika Fitriani', kelas: 'XI MIPA 1', token: 'NIS006', sudahMemilih: false, pilihan: null },
+            { id: 's7', nis: '20261007', nama: 'Fajar Nugraha', kelas: 'XI MIPA 2', token: 'NIS007', sudahMemilih: false, pilihan: null },
+            { id: 's8', nis: '20261008', nama: 'Gisella Anastasia', kelas: 'XI IPS 1', token: 'NIS008', sudahMemilih: false, pilihan: null }
+        ];
+
+        // STATE MANAGERS
+        let paslonData = JSON.parse(localStorage.getItem('epilketos_paslon')) || DEFAULT_PASLON;
+        let siswaData = JSON.parse(localStorage.getItem('epilketos_siswa')) || DEFAULT_SISWA;
+        let currentUser = JSON.parse(localStorage.getItem('epilketos_user')) || null;
+        let isAdminLoggedIn = false;
+        let selectedVotePaslonId = null;
+
+        // Chart Instances
+        let chartBarInstance = null;
+        let chartDonutInstance = null;
+
+        // SAVE DATA TO LOCAL STORAGE
+        function saveData() {
+            localStorage.setItem('epilketos_paslon', JSON.stringify(paslonData));
+            localStorage.setItem('epilketos_siswa', JSON.stringify(siswaData));
+            if (currentUser) {
+                localStorage.setItem('epilketos_user', JSON.stringify(currentUser));
+            } else {
+                localStorage.removeItem('epilketos_user');
+            }
+        }
+
+        // INITIALIZE APP ON LOAD
+        window.onload = function() {
+            lucide.createIcons();
+            updateGlobalStats();
+            renderUserStatusPill();
+            renderPaslonCards();
+            switchTab('beranda');
+        };
+
+        // VIEW SWITCHING
+        function switchTab(tabName) {
+            document.getElementById('view-beranda').classList.add('hidden');
+            document.getElementById('view-kandidat').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+
+            document.getElementById('nav-beranda').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10';
+            document.getElementById('nav-kandidat').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-white/10';
+            document.getElementById('nav-admin').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-gold-400 hover:bg-white/10 border border-gold-500/30';
+
+            if (tabName === 'beranda') {
+                document.getElementById('view-beranda').classList.remove('hidden');
+                document.getElementById('nav-beranda').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-white font-bold bg-white/15 border border-white/20';
+            } else if (tabName === 'kandidat') {
+                document.getElementById('view-kandidat').classList.remove('hidden');
+                document.getElementById('nav-kandidat').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 text-white font-bold bg-white/15 border border-white/20';
+            } else if (tabName === 'admin') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                document.getElementById('nav-admin').className = 'px-3.5 py-2 rounded-lg transition-all flex items-center gap-1.5 bg-gold-500 text-navy-950 font-black shadow-md';
+                if (isAdminLoggedIn) {
+                    renderAdminDashboard();
+                }
+            }
+        }
+
+        // USER AUTHENTICATION & LOGIN
+        function handleTokenLogin(e) {
+            e.preventDefault();
+            const inputToken = document.getElementById('input-token-login').value.trim().toUpperCase();
+            const errorMsg = document.getElementById('login-error-msg');
+            errorMsg.classList.add('hidden');
+
+            const matchedSiswa = siswaData.find(s => s.token.toUpperCase() === inputToken);
+
+            if (matchedSiswa) {
+                currentUser = matchedSiswa;
+                saveData();
+                renderUserStatusPill();
+                document.getElementById('input-token-login').value = '';
+                if (currentUser.sudahMemilih) {
+                    switchTab('beranda');
+                } else {
+                    switchTab('kandidat');
+                }
+            } else {
+                document.getElementById('login-error-text').innerText = 'Token tidak valid / tidak ditemukan!';
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            saveData();
+            renderUserStatusPill();
+            switchTab('beranda');
+        }
+
+        function renderUserStatusPill() {
+            const pill = document.getElementById('user-status-pill');
+            const text = document.getElementById('user-status-text');
+            const btnLogout = document.getElementById('btn-logout-user');
+            const loginBox = document.getElementById('login-box-container');
+            const loggedInBox = document.getElementById('logged-in-user-box');
+
+            if (currentUser) {
+                text.innerText = `${currentUser.nama} (${currentUser.kelas})`;
+                btnLogout.classList.remove('hidden');
+                pill.className = 'flex items-center gap-2 bg-navy-800 border border-blue-500/40 rounded-full px-3 py-1 text-xs text-white';
+
+                loginBox.classList.add('hidden');
+                loggedInBox.classList.remove('hidden');
+
+                document.getElementById('current-user-nama').innerText = currentUser.nama;
+                document.getElementById('current-user-detail').innerText = `${currentUser.kelas} • Token: ${currentUser.token}`;
+
+                const badge = document.getElementById('voting-status-badge');
+                const actionContainer = document.getElementById('action-vote-container');
+
+                if (currentUser.sudahMemilih) {
+                    badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1';
+                    badge.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Sudah Memilih`;
+                    actionContainer.innerHTML = `<p class="text-xs text-slate-300 font-medium">Hak suara Anda telah tersimpan secara permanen dalam sistem.</p>`;
+                } else {
+                    badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1';
+                    badge.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i> Belum Memilih`;
+                    actionContainer.innerHTML = `
+                        <button onclick="switchTab('kandidat')" class="w-full py-2 bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs rounded-xl shadow transition">
+                            Pilih Paslon Sekarang →
+                        </button>
+                    `;
+                }
+            } else {
+                text.innerText = 'Mode Tamu / Belum Login';
+                btnLogout.classList.add('hidden');
+                pill.className = 'flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-full px-3 py-1 text-xs text-slate-300';
+
+                loginBox.classList.remove('hidden');
+                loggedInBox.classList.add('hidden');
+            }
+            lucide.createIcons();
+            updateGlobalStats();
+            renderPaslonCards();
+        }
+
+        // UPDATE GLOBAL STATS
+        function updateGlobalStats() {
+            const totalSiswa = siswaData.length;
+            const sudahMemilih = siswaData.filter(s => s.sudahMemilih).length;
+            const belumMemilih = totalSiswa - sudahMemilih;
+            const percent = totalSiswa > 0 ? ((sudahMemilih / totalSiswa) * 100).toFixed(1) : 0;
+
+            document.getElementById('stat-total-siswa').innerText = `${totalSiswa} Siswa`;
+            document.getElementById('stat-suara-masuk').innerText = `${sudahMemilih} Suara`;
+            document.getElementById('stat-belum-memilih').innerText = `${belumMemilih} Siswa`;
+            document.getElementById('stat-partisipasi-percent').innerText = `${percent}%`;
+            document.getElementById('stat-partisipasi-bar').style.width = `${percent}%`;
+        }
+
+        // RENDER PASLON CARDS
+        function renderPaslonCards() {
+            const grid = document.getElementById('paslon-cards-grid');
+            grid.innerHTML = '';
+
+            paslonData.forEach(paslon => {
+                const isUserChoice = currentUser && currentUser.pilihan === paslon.id;
+                
+                let btnHtml = '';
+                if (!currentUser) {
+                    btnHtml = `
+                        <button onclick="switchTab('beranda')" class="w-full py-2.5 bg-gold-500 hover:bg-gold-400 text-navy-950 font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="key-round" class="w-4 h-4"></i>
+                            <span>Login Token untuk Memilih</span>
+                        </button>
+                    `;
+                } else if (currentUser.sudahMemilih) {
+                    if (isUserChoice) {
+                        btnHtml = `
+                            <button disabled class="w-full py-2.5 bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-default">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                <span>Pilihan Anda</span>
+                            </button>
+                        `;
+                    } else {
+                        btnHtml = `
+                            <button disabled class="w-full py-2.5 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed">
+                                Sudah Memilih
+                            </button>
+                        `;
+                    }
+                } else {
+                    btnHtml = `
+                        <button onclick="promptVoteConfirm('${paslon.id}')" class="w-full py-2.5 bg-navy-900 hover:bg-navy-800 text-white font-black text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="vote" class="w-4 h-4 text-gold-400"></i>
+                            <span>Pilih Paslon No. ${paslon.nomor}</span>
+                        </button>
+                    `;
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-sm border ${isUserChoice ? 'ring-4 ring-emerald-500 border-emerald-500' : 'border-slate-200'} flex flex-col justify-between">
+                        <div>
+                            <div class="bg-navy-950 text-white p-3 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-8 h-8 rounded-full bg-gold-400 text-navy-950 font-black flex items-center justify-center text-sm shadow">
+                                        0${paslon.nomor}
+                                    </span>
+                                    <span class="font-bold text-xs tracking-wider text-gold-400 uppercase">Paslon Nomor 0${paslon.nomor}</span>
+                                </div>
+                                ${isUserChoice ? '<span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Pilihan Anda</span>' : ''}
+                            </div>
+
+                            <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+                                <img src="${paslon.foto}" alt="${paslon.ketua}" class="w-full h-full object-cover object-top" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-3 left-3 right-3 text-white">
+                                    <p class="text-[10px] text-gold-400 font-bold uppercase tracking-wider">Calon Ketua & Waketos</p>
+                                    <h3 class="font-black text-base leading-snug">${paslon.ketua}</h3>
+                                    <p class="text-xs text-slate-200 font-medium">& ${paslon.wakil}</p>
+                                </div>
+                            </div>
+
+                            <div class="p-5 space-y-3">
+                                <div>
+                                    <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Visi Utama</p>
+                                    <p class="text-xs text-slate-600 italic line-clamp-3 leading-relaxed">
+                                        "${paslon.visi}"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 pt-0 space-y-2">
+                            <button onclick="openDetailPaslon('${paslon.id}')" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1">
+                                <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-500"></i>
+                                <span>Lihat Visi, Misi &amp; Proker</span>
+                            </button>
+                            ${btnHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            lucide.createIcons();
+        }
+
+        // DETAIL PASLON MODAL
+        function openDetailPaslon(paslonId) {
+            const paslon = paslonData.find(p => p.id === paslonId);
+            if (!paslon) return;
+
+            document.getElementById('detail-paslon-number-badge').innerText = `0${paslon.nomor}`;
+            document.getElementById('detail-paslon-title').innerText = `Paslon No. 0${paslon.nomor}`;
+            document.getElementById('detail-paslon-img').src = paslon.foto;
+            document.getElementById('detail-paslon-ketua').innerText = paslon.ketua;
+            document.getElementById('detail-paslon-wakil').innerText = `& ${paslon.wakil}`;
+            document.getElementById('detail-paslon-visi').innerText = `"${paslon.visi}"`;
+
+            const misiList = document.getElementById('detail-paslon-misi-list');
+            misiList.innerHTML = paslon.misi.map(m => `
+                <li class="flex items-start gap-2">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+                    <span>${m}</span>
+                </li>
+            `).join('');
+
+            const prokerTags = document.getElementById('detail-paslon-proker-tags');
+            prokerTags.innerHTML = paslon.programKerja.map(pk => `
+                <span class="bg-gold-500/20 text-navy-950 border border-gold-400/40 text-[11px] font-bold px-3 py-1 rounded-full">
+                    ⚡ ${pk}
+                </span>
+            `).join('');
+
+            openModal('modal-detail-paslon');
+            lucide.createIcons();
+        }
+
+        // VOTING EXECUTION FLOW
+        function promptVoteConfirm(paslonId) {
+            if (!currentUser) {
+                alert('Silakan Login dengan Token unik Anda terlebih dahulu!');
+                switchTab('beranda');
+                return;
+            }
+            if (currentUser.sudahMemilih) {
+                alert('Anda telah memilih dan tidak dapat mengubah suara.');
+                return;
+            }
+
+            const paslon = paslonData.find(p => p.id === paslonId);
+            if (!paslon) return;
+
+            selectedVotePaslonId = paslonId;
+            document.getElementById('confirm-paslon-nomor').innerText = `PASLON NOMOR URUT 0${paslon.nomor}`;
+            document.getElementById('confirm-paslon-ketua').innerText = paslon.ketua;
+            document.getElementById('confirm-paslon-wakil').innerText = `& ${paslon.wakil}`;
+
+            openModal('modal-confirm-vote');
+        }
+
+        function executeVote() {
+            if (!currentUser || !selectedVotePaslonId) return;
+
+            // 1. Update Siswa State
+            const siswaIdx = siswaData.findIndex(s => s.id === currentUser.id);
+            if (siswaIdx !== -1) {
+                siswaData[siswaIdx].sudahMemilih = true;
+                siswaData[siswaIdx].pilihan = selectedVotePaslonId;
+                currentUser = siswaData[siswaIdx];
+            }
+
+            // 2. Update Paslon Vote Count
+            const paslonIdx = paslonData.findIndex(p => p.id === selectedVotePaslonId);
+            if (paslonIdx !== -1) {
+                paslonData[paslonIdx].suara += 1;
+            }
+
+            saveData();
+            closeModal('modal-confirm-vote');
+
+            // 3. Populate Receipt Struk Modal
+            document.getElementById('struk-ref-no').innerText = `REF-${Math.floor(100000 + Math.random() * 900000)}`;
+            document.getElementById('struk-nama').innerText = currentUser.nama;
+            document.getElementById('struk-kelas').innerText = currentUser.kelas;
+            document.getElementById('struk-waktu').innerText = new Date().toLocaleString('id-ID');
+
+            openModal('modal-struk-vote');
+
+            renderUserStatusPill();
+            renderPaslonCards();
+            updateGlobalStats();
+        }
+
+        // ADMIN MANAGEMENT
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('input-pin-admin').value;
+            if (pin === 'admin123') {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login-error').classList.add('hidden');
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-dashboard-content').classList.remove('hidden');
+                renderAdminDashboard();
+            } else {
+                document.getElementById('admin-login-error').classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('input-pin-admin').value = '';
+            document.getElementById('admin-login-box').classList.remove('hidden');
+            document.getElementById('admin-dashboard-content').classList.add('hidden');
+        }
+
+        function switchAdminTab(subTab) {
+            document.getElementById('admin-subview-rekap').classList.add('hidden');
+            document.getElementById('admin-subview-paslon').classList.add('hidden');
+            document.getElementById('admin-subview-siswa').classList.add('hidden');
+
+            document.getElementById('admin-tab-rekap').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200';
+            document.getElementById('admin-tab-paslon').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200';
+            document.getElementById('admin-tab-siswa').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200';
+
+            if (subTab === 'rekap') {
+                document.getElementById('admin-subview-rekap').classList.remove('hidden');
+                document.getElementById('admin-tab-rekap').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-navy-900 text-white';
+                renderAdminDashboard();
+            } else if (subTab === 'paslon') {
+                document.getElementById('admin-subview-paslon').classList.remove('hidden');
+                document.getElementById('admin-tab-paslon').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-navy-900 text-white';
+                renderAdminPaslonList();
+            } else if (subTab === 'siswa') {
+                document.getElementById('admin-subview-siswa').classList.remove('hidden');
+                document.getElementById('admin-tab-siswa').className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-navy-900 text-white';
+                renderSiswaTable();
+            }
+        }
+
+        function renderAdminDashboard() {
+            const totalSuara = paslonData.reduce((acc, p) => acc + p.suara, 0);
+            document.getElementById('admin-rekap-total-suara').innerText = `${totalSuara} Suara Masuk`;
+
+            // Render Table Rekap
+            const tableBody = document.getElementById('table-rekap-body');
+            tableBody.innerHTML = '';
+
+            const labels = [];
+            const voteCounts = [];
+            const colors = ['#1e3a8a', '#f59e0b', '#10b981', '#6366f1', '#ec4899'];
+
+            paslonData.forEach((p, idx) => {
+                const percent = totalSuara > 0 ? ((p.suara / totalSuara) * 100).toFixed(1) : 0;
+                labels.push(`Paslon 0${p.nomor}`);
+                voteCounts.push(p.suara);
+
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-black text-navy-800">0${p.nomor}</td>
+                        <td class="p-3 font-bold text-slate-900">${p.ketua} & ${p.wakil}</td>
+                        <td class="p-3 text-center font-extrabold text-slate-800">${p.suara}</td>
+                        <td class="p-3 text-right font-black text-indigo-700">${percent}%</td>
+                    </tr>
+                `;
+            });
+
+            // Render Chart.js Bar Chart
+            const ctxBar = document.getElementById('chart-bar-paslon').getContext('2d');
+            if (chartBarInstance) chartBarInstance.destroy();
+            chartBarInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Suara',
+                        data: voteCounts,
+                        backgroundColor: colors.slice(0, paslonData.length),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Render Chart.js Donut Chart
+            const ctxDonut = document.getElementById('chart-donut-paslon').getContext('2d');
+            if (chartDonutInstance) chartDonutInstance.destroy();
+            chartDonutInstance = new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: voteCounts,
+                        backgroundColor: colors.slice(0, paslonData.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function confirmResetAllVotes() {
+            if (confirm('PERINGATAN! Apakah Anda yakin ingin mereset SELURUH data suara dan mereset status memilih seluruh siswa?')) {
+                paslonData.forEach(p => p.suara = 0);
+                siswaData.forEach(s => {
+                    s.sudahMemilih = false;
+                    s.pilihan = null;
+                });
+                if (currentUser) {
+                    currentUser.sudahMemilih = false;
+                    currentUser.pilihan = null;
+                }
+                saveData();
+                renderAdminDashboard();
+                renderUserStatusPill();
+                alert('Data suara berhasil di-reset!');
+            }
+        }
+
+        // CRUD PASLON FUNCTIONS
+        function renderAdminPaslonList() {
+            const grid = document.getElementById('admin-paslon-list-grid');
+            grid.innerHTML = '';
+
+            paslonData.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-black text-xs bg-navy-950 text-gold-400 px-2.5 py-1 rounded-lg">
+                                    No. Urut 0${p.nomor}
+                                </span>
+                                <div class="flex gap-1">
+                                    <button onclick="openModalPaslon('${p.id}')" class="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deletePaslon('${p.id}')" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <img src="${p.foto}" class="w-full h-36 object-cover rounded-xl mb-2" />
+                            <h4 class="font-extrabold text-slate-900 text-sm">${p.ketua}</h4>
+                            <p class="text-xs text-slate-500 font-medium">& ${p.wakil}</p>
+                        </div>
+                        <div class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 line-clamp-2">
+                            <strong>Visi:</strong> ${p.visi}
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openModalPaslon(paslonId = null) {
+            if (paslonId) {
+                const p = paslonData.find(x => x.id === paslonId);
+                document.getElementById('modal-paslon-title-text').innerText = 'Edit Data Paslon';
+                document.getElementById('form-paslon-id').value = p.id;
+                document.getElementById('form-paslon-nomor').value = p.nomor;
+                document.getElementById('form-paslon-ketua').value = p.ketua;
+                document.getElementById('form-paslon-wakil').value = p.wakil;
+                document.getElementById('form-paslon-foto').value = p.foto;
+                document.getElementById('form-paslon-visi').value = p.visi;
+                document.getElementById('form-paslon-misi').value = p.misi.join('\n');
+                document.getElementById('form-paslon-proker').value = p.programKerja.join('\n');
+            } else {
+                document.getElementById('modal-paslon-title-text').innerText = 'Tambah Paslon Baru';
+                document.getElementById('form-paslon-id').value = '';
+                document.getElementById('form-paslon-nomor').value = paslonData.length + 1;
+                document.getElementById('form-paslon-ketua').value = '';
+                document.getElementById('form-paslon-wakil').value = '';
+                document.getElementById('form-paslon-foto').value = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600';
+                document.getElementById('form-paslon-visi').value = '';
+                document.getElementById('form-paslon-misi').value = '';
+                document.getElementById('form-paslon-proker').value = '';
+            }
+            openModal('modal-form-paslon');
+        }
+
+        function savePaslonForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-paslon-id').value;
+            const nomor = parseInt(document.getElementById('form-paslon-nomor').value);
+            const ketua = document.getElementById('form-paslon-ketua').value;
+            const wakil = document.getElementById('form-paslon-wakil').value;
+            const foto = document.getElementById('form-paslon-foto').value;
+            const visi = document.getElementById('form-paslon-visi').value;
+            const misi = document.getElementById('form-paslon-misi').value.split('\n').filter(x => x.trim());
+            const proker = document.getElementById('form-paslon-proker').value.split('\n').filter(x => x.trim());
+
+            if (id) {
+                const idx = paslonData.findIndex(p => p.id === id);
+                if (idx !== -1) {
+                    paslonData[idx] = { ...paslonData[idx], nomor, ketua, wakil, foto, visi, misi, programKerja: proker };
+                }
+            } else {
+                const newPaslon = {
+                    id: `paslon-${Date.now()}`,
+                    nomor, ketua, wakil, foto, visi, misi, programKerja: proker, suara: 0
+                };
+                paslonData.push(newPaslon);
+            }
+
+            saveData();
+            closeModal('modal-form-paslon');
+            renderAdminPaslonList();
+            renderPaslonCards();
+        }
+
+        function deletePaslon(id) {
+            if (confirm('Yakin ingin menghapus paslon ini?')) {
+                paslonData = paslonData.filter(p => p.id !== id);
+                saveData();
+                renderAdminPaslonList();
+                renderPaslonCards();
+            }
+        }
+
+        function convertImageToBase64(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    document.getElementById('form-paslon-foto').value = reader.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // CRUD SISWA FUNCTIONS
+        function renderSiswaTable() {
+            const searchQuery = document.getElementById('search-siswa-input').value.toLowerCase();
+            const tbody = document.getElementById('table-siswa-body');
+            tbody.innerHTML = '';
+
+            const filtered = siswaData.filter(s => 
+                s.nama.toLowerCase().includes(searchQuery) ||
+                s.nis.toLowerCase().includes(searchQuery) ||
+                s.kelas.toLowerCase().includes(searchQuery)
+            );
+
+            filtered.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-mono text-slate-600">${s.nis}</td>
+                        <td class="p-3 font-bold text-slate-900">${s.nama}</td>
+                        <td class="p-3 text-slate-600">${s.kelas}</td>
+                        <td class="p-3 font-mono font-bold text-navy-800 bg-blue-50/50 px-2 py-1 rounded">${s.token}</td>
+                        <td class="p-3">
+                            ${s.sudahMemilih ? 
+                                '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Sudah Memilih</span>' : 
+                                '<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Belum Memilih</span>'
+                            }
+                        </td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="openModalSiswa('${s.id}')" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="deleteSiswa('${s.id}')" class="p-1.5 text-red-600 hover:bg-red-100 rounded">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function openModalSiswa(siswaId = null) {
+            if (siswaId) {
+                const s = siswaData.find(x => x.id === siswaId);
+                document.getElementById('modal-siswa-title-text').innerText = 'Edit Data Siswa';
+                document.getElementById('form-siswa-id').value = s.id;
+                document.getElementById('form-siswa-nis').value = s.nis;
+                document.getElementById('form-siswa-nama').value = s.nama;
+                document.getElementById('form-siswa-kelas').value = s.kelas;
+                document.getElementById('form-siswa-token').value = s.token;
+            } else {
+                document.getElementById('modal-siswa-title-text').innerText = 'Tambah Siswa Baru';
+                document.getElementById('form-siswa-id').value = '';
+                document.getElementById('form-siswa-nis').value = `2026${Math.floor(1000 + Math.random() * 9000)}`;
+                document.getElementById('form-siswa-nama').value = '';
+                document.getElementById('form-siswa-kelas').value = 'XII MIPA 1';
+                document.getElementById('form-siswa-token').value = `NIS${Math.floor(100 + Math.random() * 900)}`;
+            }
+            openModal('modal-form-siswa');
+        }
+
+        function saveSiswaForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-siswa-id').value;
+            const nis = document.getElementById('form-siswa-nis').value;
+            const nama = document.getElementById('form-siswa-nama').value;
+            const kelas = document.getElementById('form-siswa-kelas').value;
+            const token = document.getElementById('form-siswa-token').value.toUpperCase();
+
+            if (id) {
+                const idx = siswaData.findIndex(s => s.id === id);
+                if (idx !== -1) {
+                    siswaData[idx] = { ...siswaData[idx], nis, nama, kelas, token };
+                }
+            } else {
+                siswaData.push({
+                    id: `siswa-${Date.now()}`,
+                    nis, nama, kelas, token, sudahMemilih: false, pilihan: null
+                });
+            }
+
+            saveData();
+            closeModal('modal-form-siswa');
+            renderSiswaTable();
+            updateGlobalStats();
+        }
+
+        function deleteSiswa(id) {
+            if (confirm('Yakin ingin menghapus siswa ini?')) {
+                siswaData = siswaData.filter(s => s.id !== id);
+                saveData();
+                renderSiswaTable();
+                updateGlobalStats();
+            }
+        }
+
+        function autoGenerateAllTokens() {
+            if (confirm('Generate Token Unik Baru untuk SELURUH siswa yang belum memilih?')) {
+                siswaData.forEach(s => {
+                    if (!s.sudahMemilih) {
+                        s.token = `KRT${Math.floor(100000 + Math.random() * 900000)}`;
+                    }
+                });
+                saveData();
+                renderSiswaTable();
+                alert('Token berhasil di-generate!');
+            }
+        }
+
+        // CSV IMPORT / EXPORT
+        function openModalImportCsv() {
+            document.getElementById('import-csv-textarea').value = '';
+            document.getElementById('import-csv-status').classList.add('hidden');
+            openModal('modal-import-csv');
+        }
+
+        function processCsvImport() {
+            const rawText = document.getElementById('import-csv-textarea').value.trim();
+            const statusEl = document.getElementById('import-csv-status');
+
+            if (!rawText) {
+                statusEl.innerText = 'Teks CSV masih kosong!';
+                statusEl.className = 'text-xs font-bold text-red-600';
+                statusEl.classList.remove('hidden');
+                return;
+            }
+
+            const lines = rawText.split('\n');
+            let importedCount = 0;
+
+            lines.forEach((line, idx) => {
+                if (idx === 0 && line.toLowerCase().includes('nis')) return; // Skip Header
+
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 2) {
+                    const nis = parts[0];
+                    const nama = parts[1];
+                    const kelas = parts[2] || 'Umum';
+                    const token = parts[3] || `TKN${Math.floor(100 + Math.random() * 900)}`;
+
+                    siswaData.push({
+                        id: `s-imp-${Date.now()}-${idx}`,
+                        nis, nama, kelas, token, sudahMemilih: false, pilihan: null
+                    });
+                    importedCount++;
+                }
+            });
+
+            if (importedCount > 0) {
+                saveData();
+                statusEl.innerText = `Sukses mengimpor ${importedCount} data siswa!`;
+                statusEl.className = 'text-xs font-bold text-emerald-600';
+                statusEl.classList.remove('hidden');
+                setTimeout(() => {
+                    closeModal('modal-import-csv');
+                    renderSiswaTable();
+                    updateGlobalStats();
+                }, 1200);
+            } else {
+                statusEl.innerText = 'Format tidak valid. Gunakan: NIS, Nama, Kelas, Token';
+                statusEl.className = 'text-xs font-bold text-red-600';
+                statusEl.classList.remove('hidden');
+            }
+        }
+
+        function downloadCsvTemplate() {
+            const content = "data:text/csv;charset=utf-8,NIS,Nama,Kelas,Token\n20262001,Budi Santoso,X MIPA 1,NIS091\n20262002,Siti Aminah,X MIPA 1,NIS092";
+            const encodedUri = encodeURI(content);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "template_siswa_smas_kartini.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportSiswaToCsv() {
+            let csv = "NIS,Nama,Kelas,Token,SudahMemilih\n";
+            siswaData.forEach(s => {
+                csv += `${s.nis},${s.nama},${s.kelas},${s.token},${s.sudahMemilih ? 'YA' : 'BELUM'}\n`;
+            });
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "dpt_siswa_smas_kartini.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // MODAL HELPERS
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
